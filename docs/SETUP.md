@@ -1,28 +1,41 @@
 # 🚀 Instrukcja Uruchomienia Mikrousług
 
 ## Wymagania
-- **Docker** i **Docker Compose** zainstalowane
-- **Node.js 18+** (opcjonalnie do lokalnego developmentu)
+- **Node.js 18+** (wymagany do lokalnego developmentu)
+- **MongoDB** (instalacja przez Homebrew: `brew install mongodb-community`)
+- **Docker** i **Docker Compose** (opcjonalne do konteneryzacji)
 - **Git** do klonowania repozytorium
 
-## 🛠️ Szybkie Uruchomienie
+## 🛠️ Szybkie Uruchomienie (REKOMENDOWANE)
 
-### 1. Klonowanie i przejście do projektu
+### 1. Klonowanie i przygotowanie projektu
 ```bash
 git clone https://github.com/Danielomix/mikrouslugi.git
 cd mikrouslugi
+
+# Instalacja wszystkich zależności
+npm run install-all
 ```
 
-### 2. Uruchomienie wszystkich serwisów
+### 2. Uruchomienie lokalnie (bez Docker)
 ```bash
-# Opcja 1: Bezpośrednio Docker Compose
+# Uruchom wszystkie serwisy jedną komendą
+./start-local.sh
+
+# Zatrzymaj wszystkie serwisy
+./stop-local.sh
+```
+
+### 3. Alternatywnie: Docker Compose
+```bash
+# Opcja z konteneryzacją
 docker-compose up --build
 
-# Opcja 2: Używając npm scripts
+# Lub używając npm scripts
 npm run dev
 ```
 
-### 3. Weryfikacja działania
+### 4. Weryfikacja działania
 Sprawdź czy wszystkie serwisy działają:
 ```bash
 # Health check wszystkich serwisów

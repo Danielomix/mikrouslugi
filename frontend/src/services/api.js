@@ -31,7 +31,12 @@ class ApiService {
 
   // Auth endpoints
   async login(email, password) {
-    return this.client.post('/api/auth/login', { email, password });
+    const response = await this.client.post('/api/auth/login', { email, password });
+    if (response.success && response.token) {
+      this.setAuthToken(response.token);
+      console.log('Auth token set after login:', response.token.substring(0, 20) + '...');
+    }
+    return response;
   }
 
   async register(name, email, password) {
@@ -48,6 +53,7 @@ class ApiService {
 
   // Product endpoints
   async getProducts(params = {}) {
+    console.log('Making getProducts request with auth token:', this.client.defaults.headers.common['Authorization']?.substring(0, 30) + '...');
     return this.client.get('/api/products', { params });
   }
 

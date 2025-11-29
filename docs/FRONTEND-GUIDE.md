@@ -1,23 +1,38 @@
-# 🎉 Mikrousługi z Interfejsem Web - KOMPLETNE!
+# 🎉 Mikrousługi z Kompletnym Interfejsem Web - DZIAŁAJĄCE!
 
-## ✅ Co zostało dodane - SZATA WIZUALNA!
+## ✅ Co zostało zrealizowane - PEŁNA FUNKCJONALNOŚĆ!
 
-### 🌟 Frontend React.js Application
+### 🌟 Frontend React.js Application (Port 3003)
 - **Nowoczesny interfejs**: Material-UI design system
-- **Responsywny**: Działa na desktop i mobile
-- **Dashboard**: Przegląd statystyk i szybkie akcje
-- **Zarządzanie produktami**: Dodawanie, edycja, usuwanie
-- **Autentykacja**: Logowanie i rejestracja użytkowników
-- **Real-time**: Połączenie z API mikrousług
+- **Responsywny**: Działa na desktop i mobile  
+- **Dashboard**: Przegląd statystyk i najnowszych produktów
+- **Zarządzanie produktami**: Pełny CRUD - dodawanie, edycja, usuwanie
+- **Wyszukiwanie**: Po nazwie, opisie, SKU
+- **Filtrowanie**: Po kategorii, cenie (min/max)
+- **Autentykacja**: JWT-based logowanie i rejestracja
+- **Error handling**: Toast notifications
+- **Real-time**: Bezpośrednie połączenie z API Gateway
 
-## 🚀 Uruchomienie z Interfejsem
+### 🔧 Backend Mikrousługi
+- **Auth Service** (3001): JWT authentication, bcrypt passwords
+- **Product Service** (3002): MongoDB + Mongoose, full CRUD
+- **API Gateway** (3000): Simple Express + Axios proxy (stabilny!)
+
+## 🚀 Szybkie Uruchomienie (NAJŁATWIEJSZE!)
 
 ```bash
-# Uruchom wszystkie serwisy (backend + frontend)
-docker-compose up --build
+# Klonuj i przejdź do projektu
+git clone https://github.com/Danielomix/mikrouslugi.git
+cd mikrouslugi
 
-# Lub używając npm
-npm run dev
+# Zainstaluj wszystkie zależności
+npm run install-all
+
+# Uruchom wszystko jedną komendą (REKOMENDOWANE!)
+./start-local.sh
+
+# Zatrzymaj wszystko
+./stop-local.sh
 ```
 
 ## 🌐 Dostępne Adresy
@@ -32,37 +47,56 @@ npm run dev
 - **Dokumentacja API**: http://localhost:3000/api-docs
 - **Health Check**: http://localhost:3000/health
 
+## 🎯 Jak używać aplikacji
+
+### 1️⃣ Pierwsze kroki
+1. **Uruchom aplikację**: `./start-local.sh`
+2. **Otwórz przeglądarkę**: http://localhost:3003
+3. **Zarejestruj konto** lub zaloguj się (test@test.com / test123)
+4. **Sprawdź Dashboard** - zobaczysz statystyki
+
+### 2️⃣ Testowe dane 
+Po uruchomieniu masz dostęp do:
+- **Użytkownik**: test@test.com / test123
+- **Przykładowy produkt**: Opel Astra H (jeśli został wcześniej dodany)
+
+### 3️⃣ Zarządzanie produktami
+- **Dodaj nowy produkt**: Dashboard → "Dodaj Produkt" lub Produkty → "+"
+- **Szukaj produktów**: Użyj pola wyszukiwania (działa po nazwie, opisie, SKU)
+- **Filtruj**: Po kategorii, cenie min/max
+- **Edytuj/Usuń**: Przejdź do listy produktów, kliknij akcje
+
 ## 📱 Funkcje Interfejsu
 
-### 🔐 Autentykacja
-- Rejestracja nowych użytkowników
-- Logowanie z walidacją
-- Automatyczne zarządzanie tokenami JWT
-- Wylogowywanie
+### 🔐 Autentykacja ✅
+- ✅ Rejestracja nowych użytkowników z walidacją
+- ✅ Logowanie z error handling
+- ✅ Automatyczne zarządzanie tokenami JWT
+- ✅ Wylogowywanie i redirect
 
-### 📊 Dashboard
-- Statystyki produktów
-- Przegląd ostatnich produktów
-- Szybkie akcje (dodaj produkt, przeglądaj)
-- Wskazówki dla użytkownika
+### 📊 Dashboard ✅ 
+- ✅ Statystyki produktów (ile łącznie)
+- ✅ Lista najnowszych produktów
+- ✅ Szybkie akcje (dodaj produkt, przejdź do listy)
+- ✅ Informacje dla użytkownika
 
-### 🛍️ Zarządzanie Produktami
-- **Lista produktów** z filtrowaniem:
-  - Wyszukiwanie po nazwie
-  - Filtrowanie po kategorii
-  - Zakres cenowy
-  - Paginacja
+### 🛍️ Zarządzanie Produktami ✅
+- **Lista produktów** z zaawansowanym filtrowaniem:
+  - ✅ Wyszukiwanie po nazwie, opisie, SKU
+  - ✅ Filtrowanie po kategorii (Electronics, Books, Other etc.)
+  - ✅ Zakres cenowy (min/max)
+  - ✅ Paginacja i limity wyników
 - **Dodawanie produktów**:
-  - Formularz z walidacją
-  - Wybór kategorii
-  - Dodawanie tagów
-  - Obsługa zdjęć
+  - ✅ Formularz z walidacją pól
+  - ✅ Dropdown kategorii
+  - ✅ Walidacja SKU z formatem
+  - ✅ Stock management
 - **Edycja produktów**:
-  - Edycja wszystkich pól
-  - Podgląd zmian
+  - ✅ Edycja wszystkich pól
+  - ✅ Zachowanie danych w formularzu
 - **Usuwanie produktów**:
-  - Potwierdzenie akcji
-  - Soft delete
+  - ✅ Dialog potwierdzenia
+  - ✅ Instant refresh listy
 
 ## 🎨 Design System
 

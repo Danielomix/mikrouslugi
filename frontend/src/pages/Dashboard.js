@@ -36,16 +36,28 @@ function Dashboard() {
 
   const fetchDashboardData = async () => {
     try {
+      console.log('Fetching dashboard data...');
       const productsResponse = await api.getProducts({ limit: 5 });
+      console.log('Dashboard API Response:', productsResponse);
       
-      setStats({
-        totalProducts: productsResponse.pagination?.total || 0,
-        totalUsers: 1, // Since we only have current user info
-        recentProducts: productsResponse.products || [],
-        loading: false,
-      });
+      if (productsResponse.success) {
+        setStats({
+          totalProducts: productsResponse.pagination?.total || 0,
+          totalUsers: 1, // Since we only have current user info
+          recentProducts: productsResponse.products || [],
+          loading: false,
+        });
+        console.log('Dashboard stats set:', {
+          totalProducts: productsResponse.pagination?.total || 0,
+          recentProducts: productsResponse.products || []
+        });
+      } else {
+        console.error('Dashboard API returned success: false', productsResponse);
+        setStats(prev => ({ ...prev, loading: false }));
+      }
     } catch (error) {
       console.error('Failed to fetch dashboard data:', error);
+      console.error('Dashboard error details:', error.response?.data);
       setStats(prev => ({ ...prev, loading: false }));
     }
   };

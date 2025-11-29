@@ -64,7 +64,7 @@ function Products() {
 
   useEffect(() => {
     fetchProducts();
-  }, [filters]);
+  }, [filters]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const fetchProducts = async () => {
     setLoading(true);
@@ -77,11 +77,21 @@ function Products() {
         }
       });
 
+      console.log('Fetching products with params:', params);
       const response = await api.getProducts(params);
-      setProducts(response.products || []);
-      setPagination(response.pagination || {});
+      console.log('API Response:', response);
+      
+      if (response.success) {
+        setProducts(response.products || []);
+        setPagination(response.pagination || {});
+        console.log('Products set:', response.products);
+      } else {
+        console.error('API returned success: false', response);
+        toast.error('Nie udało się pobrać produktów');
+      }
     } catch (error) {
       console.error('Failed to fetch products:', error);
+      console.error('Error details:', error.response?.data);
       toast.error('Nie udało się pobrać produktów');
     } finally {
       setLoading(false);
