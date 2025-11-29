@@ -9,7 +9,7 @@
 
 ### 1. Klonowanie i przejście do projektu
 ```bash
-git clone <repository-url>
+git clone https://github.com/Danielomix/mikrouslugi.git
 cd mikrouslugi
 ```
 
