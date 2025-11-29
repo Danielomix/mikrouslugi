@@ -1,0 +1,35 @@
+{
+  "name": "mikrouslugi",
+  "version": "1.0.0",
+  "description": "Microservices architecture with Node.js, Express, MongoDB, JWT authentication, and Docker",
+  "main": "index.js",
+  "scripts": {
+    "install-all": "npm run install:auth && npm run install:product && npm run install:gateway && npm run install:frontend",
+    "install:auth": "cd services/auth-service && npm install",
+    "install:product": "cd services/product-service && npm install",
+    "install:gateway": "cd gateway && npm install",
+    "install:frontend": "cd frontend && npm install",
+    "dev": "docker-compose up --build",
+    "start": "docker-compose up",
+    "stop": "docker-compose down",
+    "logs": "docker-compose logs -f",
+    "clean": "docker-compose down -v --remove-orphans",
+    "frontend:dev": "cd frontend && npm start",
+    "frontend:build": "cd frontend && npm run build"
+  },
+  "keywords": [
+    "microservices",
+    "nodejs",
+    "express",
+    "mongodb",
+    "jwt",
+    "docker",
+    "api-gateway"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "nodemon": "^3.0.1",
+    "concurrently": "^8.2.2"
+  }
+}

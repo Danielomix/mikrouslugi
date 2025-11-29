@@ -1,0 +1,43 @@
+{
+	"id": "mikrouslugi-environment",
+	"name": "Mikrousługi Environment",
+	"values": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:3000",
+			"description": "API Gateway URL",
+			"enabled": true
+		},
+		{
+			"key": "authServiceUrl",
+			"value": "http://localhost:3001",
+			"description": "Auth Service Direct URL",
+			"enabled": true
+		},
+		{
+			"key": "productServiceUrl",
+			"value": "http://localhost:3002",
+			"description": "Product Service Direct URL",
+			"enabled": true
+		},
+		{
+			"key": "authToken",
+			"value": "",
+			"description": "JWT Token (automatically set after login)",
+			"enabled": true
+		},
+		{
+			"key": "userId",
+			"value": "",
+			"description": "Current User ID (automatically set after login)",
+			"enabled": true
+		},
+		{
+			"key": "productId",
+			"value": "",
+			"description": "Current Product ID (automatically set after creating product)",
+			"enabled": true
+		}
+	],
+	"_postman_variable_scope": "environment"
+}

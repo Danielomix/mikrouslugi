@@ -1,0 +1,105 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:7
+    container_name: mikrouslugi-mongodb
+    restart: always
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password
+      MONGO_INITDB_DATABASE: mikrouslugi
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - mikrouslugi-network
+
+  auth-service:
+    build:
+      context: ./services/auth-service
+      dockerfile: Dockerfile
+    container_name: mikrouslugi-auth
+    restart: always
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=development
+      - PORT=3001
+      - MONGODB_URI=mongodb://admin:password@mongodb:27017/mikrouslugi?authSource=admin
+      - JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
+      - JWT_EXPIRES_IN=24h
+    depends_on:
+      - mongodb
+    networks:
+      - mikrouslugi-network
+    volumes:
+      - ./services/auth-service:/usr/src/app
+      - /usr/src/app/node_modules
+
+  product-service:
+    build:
+      context: ./services/product-service
+      dockerfile: Dockerfile
+    container_name: mikrouslugi-product
+    restart: always
+    ports:
+      - "3002:3002"
+    environment:
+      - NODE_ENV=development
+      - PORT=3002
+      - MONGODB_URI=mongodb://admin:password@mongodb:27017/mikrouslugi?authSource=admin
+      - AUTH_SERVICE_URL=http://auth-service:3001
+    depends_on:
+      - mongodb
+      - auth-service
+    networks:
+      - mikrouslugi-network
+    volumes:
+      - ./services/product-service:/usr/src/app
+      - /usr/src/app/node_modules
+
+  api-gateway:
+    build:
+      context: ./gateway
+      dockerfile: Dockerfile
+    container_name: mikrouslugi-gateway
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - PORT=3000
+      - AUTH_SERVICE_URL=http://auth-service:3001
+      - PRODUCT_SERVICE_URL=http://product-service:3002
+    depends_on:
+      - auth-service
+      - product-service
+    networks:
+      - mikrouslugi-network
+    volumes:
+      - ./gateway:/usr/src/app
+      - /usr/src/app/node_modules
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: mikrouslugi-frontend
+    restart: always
+    ports:
+      - "3003:3003"
+    environment:
+      - REACT_APP_API_URL=http://localhost:3000
+    depends_on:
+      - api-gateway
+    networks:
+      - mikrouslugi-network
+
+volumes:
+  mongodb_data:
+
+networks:
+  mikrouslugi-network:
+    driver: bridge
