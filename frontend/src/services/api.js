@@ -73,6 +73,75 @@ class ApiService {
     return this.client.delete(`/api/products/${id}`);
   }
 
+  // Order endpoints
+  async getOrders(params = {}) {
+    return this.client.get('/api/orders', { params });
+  }
+
+  async getOrder(id) {
+    return this.client.get(`/api/orders/${id}`);
+  }
+
+  async createOrder(orderData) {
+    return this.client.post('/api/orders', orderData);
+  }
+
+  async updateOrderStatus(id, status) {
+    return this.client.put(`/api/orders/${id}/status`, { status });
+  }
+
+  // Payment endpoints
+  async getPayments(params = {}) {
+    return this.client.get('/api/payments', { params });
+  }
+
+  async createPayment(paymentData) {
+    return this.client.post('/api/payments', paymentData);
+  }
+
+  async processPayment(id) {
+    return this.client.post(`/api/payments/${id}/process`);
+  }
+
+  // Inventory endpoints
+  async getInventory(params = {}) {
+    return this.client.get('/api/inventory', { params });
+  }
+
+  async checkStock(productId, quantity = 1) {
+    return this.client.get(`/api/inventory/check-stock/${productId}`, { params: { quantity } });
+  }
+
+  async reserveStock(productId, quantity) {
+    return this.client.post('/api/inventory/reserve', { productId, quantity });
+  }
+
+  async getLowStockItems() {
+    return this.client.get('/api/inventory/low-stock');
+  }
+
+  // Notification endpoints
+  async getNotifications(params = {}) {
+    return this.client.get('/api/notifications', { params });
+  }
+
+  async getUserNotifications(userId) {
+    return this.client.get(`/api/notifications/user/${userId}`);
+  }
+
+  async createNotification(notificationData) {
+    return this.client.post('/api/notifications', notificationData);
+  }
+
+  // Analytics endpoints
+  async getSalesAnalytics(period = 'month') {
+    return this.client.get('/api/analytics/sales', { params: { period } });
+  }
+
+  async getDashboardData() {
+    return this.client.get('/api/analytics/dashboard');
+  }
+
   // Health check
   async healthCheck() {
     return this.client.get('/health');

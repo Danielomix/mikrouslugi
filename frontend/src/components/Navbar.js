@@ -15,6 +15,9 @@ import {
   Dashboard,
   AccountCircle,
   Logout,
+  ShoppingBag,
+  Inventory,
+  Analytics,
 } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
@@ -78,6 +81,39 @@ function Navbar() {
               }}
             >
               Produkty
+            </Button>
+            <Button
+              color="inherit"
+              startIcon={<ShoppingBag />}
+              onClick={() => navigate('/orders')}
+              sx={{
+                backgroundColor: isActive('/orders') ? 'rgba(255,255,255,0.2)' : 'transparent',
+                '&:hover': { backgroundColor: 'rgba(255,255,255,0.1)' }
+              }}
+            >
+              Zamówienia
+            </Button>
+            <Button
+              color="inherit"
+              startIcon={<Inventory />}
+              onClick={() => navigate('/inventory')}
+              sx={{
+                backgroundColor: isActive('/inventory') ? 'rgba(255,255,255,0.2)' : 'transparent',
+                '&:hover': { backgroundColor: 'rgba(255,255,255,0.1)' }
+              }}
+            >
+              Magazyn
+            </Button>
+            <Button
+              color="inherit"
+              startIcon={<Analytics />}
+              onClick={() => navigate('/analytics')}
+              sx={{
+                backgroundColor: isActive('/analytics') ? 'rgba(255,255,255,0.2)' : 'transparent',
+                '&:hover': { backgroundColor: 'rgba(255,255,255,0.1)' }
+              }}
+            >
+              Analityka
             </Button>
             
             <IconButton

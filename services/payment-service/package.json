@@ -1,0 +1,39 @@
+{
+  "name": "payment-service",
+  "version": "1.0.0",
+  "description": "Payment processing microservice",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "mongoose": "^7.5.0",
+    "jsonwebtoken": "^9.0.2",
+    "express-validator": "^7.0.1",
+    "dotenv": "^16.3.1",
+    "cors": "^2.8.5",
+    "helmet": "^7.0.0",
+    "morgan": "^1.10.0",
+    "express-rate-limit": "^6.10.0",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.0",
+    "axios": "^1.6.2",
+    "stripe": "^14.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  },
+  "keywords": [
+    "microservice",
+    "payment",
+    "stripe",
+    "nodejs",
+    "express",
+    "mongodb"
+  ],
+  "author": "Payment Service",
+  "license": "MIT"
+}

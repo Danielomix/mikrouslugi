@@ -12,41 +12,28 @@ killall node 2>/dev/null || echo "Brak procesów Node.js do zatrzymania"
 echo "🔍 Sprawdzanie czy porty są wolne..."
 sleep 2
 
-if lsof -i:3000 > /dev/null 2>&1; then
-    echo "⚠️  Port 3000 nadal zajęty"
-    lsof -ti:3000 | xargs kill -9 2>/dev/null
-else
-    echo "✅ Port 3000 wolny"
-fi
-
-if lsof -i:3001 > /dev/null 2>&1; then
-    echo "⚠️  Port 3001 nadal zajęty"
-    lsof -ti:3001 | xargs kill -9 2>/dev/null
-else
-    echo "✅ Port 3001 wolny"
-fi
-
-if lsof -i:3002 > /dev/null 2>&1; then
-    echo "⚠️  Port 3002 nadal zajęty"
-    lsof -ti:3002 | xargs kill -9 2>/dev/null
-else
-    echo "✅ Port 3002 wolny"
-fi
-
-if lsof -i:3003 > /dev/null 2>&1; then
-    echo "⚠️  Port 3003 nadal zajęty"
-    lsof -ti:3003 | xargs kill -9 2>/dev/null
-else
-    echo "✅ Port 3003 wolny"
-fi
+PORTS=(3000 3001 3002 3003 3004 3005 3006 3007 3008)
+for port in "${PORTS[@]}"; do
+    if lsof -i:$port > /dev/null 2>&1; then
+        echo "⚠️  Port $port nadal zajęty - wymuszam zamknięcie"
+        lsof -ti:$port | xargs kill -9 2>/dev/null
+    else
+        echo "✅ Port $port wolny"
+    fi
+done
 
 # Czyszczenie logów
 echo "🧹 Czyszczenie logów..."
 rm -f /tmp/auth-service.log
 rm -f /tmp/product-service.log
+rm -f /tmp/order-service.log
+rm -f /tmp/payment-service.log
+rm -f /tmp/notification-service.log
+rm -f /tmp/inventory-service.log
+rm -f /tmp/analytics-service.log
 rm -f /tmp/gateway.log
 rm -f /tmp/frontend.log
 
 echo ""
-echo "✅ Wszystkie mikrousługi zostały zatrzymane!"
+echo "✅ Wszystkie 8 mikrousług zostały zatrzymane!"
 echo ""

@@ -134,26 +134,29 @@ function Dashboard() {
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
           <StatCard
-            title="Użytkownicy"
-            value={stats.totalUsers}
-            icon={<People />}
-            color="secondary"
-          />
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
-          <StatCard
-            title="Sprzedaż"
-            value="₹2.4M"
-            icon={<TrendingUp />}
-            color="success"
-          />
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
-          <StatCard
             title="Zamówienia"
-            value="1,234"
+            value="12"
             icon={<ShoppingCart />}
             color="warning"
+            onClick={() => navigate('/orders')}
+          />
+        </Grid>
+        <Grid item xs={12} sm={6} md={3}>
+          <StatCard
+            title="Magazyn"
+            value="85"
+            icon={<Inventory />}
+            color="info"
+            onClick={() => navigate('/inventory')}
+          />
+        </Grid>
+        <Grid item xs={12} sm={6} md={3}>
+          <StatCard
+            title="Analityka"
+            value="📊"
+            icon={<TrendingUp />}
+            color="success"
+            onClick={() => navigate('/analytics')}
           />
         </Grid>
       </Grid>
