@@ -45,9 +45,10 @@ app.all('/api/auth/*', async (req, res) => {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': req.headers.authorization,
-        ...req.headers
+        'Cache-Control': 'no-cache',
+        'Pragma': 'no-cache'
       },
-      timeout: 10000
+      timeout: 30000
     });
     
     res.status(response.status).json(response.data);
@@ -79,7 +80,7 @@ app.all('/api/products*', async (req, res) => {
         'Cache-Control': 'no-cache',
         'Pragma': 'no-cache'
       },
-      timeout: 10000
+      timeout: 30000
     });
     
     res.status(response.status).json(response.data);
@@ -111,7 +112,7 @@ app.all('/api/orders*', async (req, res) => {
         'Cache-Control': 'no-cache',
         'Pragma': 'no-cache'
       },
-      timeout: 10000
+      timeout: 30000
     });
     
     res.status(response.status).json(response.data);
@@ -143,7 +144,7 @@ app.all('/api/payments*', async (req, res) => {
         'Cache-Control': 'no-cache',
         'Pragma': 'no-cache'
       },
-      timeout: 10000
+      timeout: 30000
     });
     
     res.status(response.status).json(response.data);
@@ -175,7 +176,7 @@ app.all('/api/notifications*', async (req, res) => {
         'Cache-Control': 'no-cache',
         'Pragma': 'no-cache'
       },
-      timeout: 10000
+      timeout: 30000
     });
     
     res.status(response.status).json(response.data);
@@ -207,7 +208,7 @@ app.all('/api/inventory*', async (req, res) => {
         'Cache-Control': 'no-cache',
         'Pragma': 'no-cache'
       },
-      timeout: 10000
+      timeout: 30000
     });
     
     res.status(response.status).json(response.data);
@@ -239,7 +240,7 @@ app.all('/api/analytics*', async (req, res) => {
         'Cache-Control': 'no-cache',
         'Pragma': 'no-cache'
       },
-      timeout: 10000
+      timeout: 30000
     });
     
     res.status(response.status).json(response.data);
