@@ -2,8 +2,89 @@ const express = require('express');
 const { body, validationResult, query, param } = require('express-validator');
 const Product = require('../models/Product');
 const authMiddleware = require('../middleware/auth');
+const axios = require('axios');
 
 const router = express.Router();
+
+const INVENTORY_SERVICE_URL = process.env.INVENTORY_SERVICE_URL || 'http://localhost:3007';
+
+// Helper function to update inventory record
+async function updateInventoryRecord(product, userToken) {
+  try {
+    // Najpierw znajdźmy inventory record dla tego produktu
+    const inventoryResponse = await axios.get(
+      `${INVENTORY_SERVICE_URL}/inventory/product/${product._id}`,
+      {
+        headers: {
+          'Authorization': userToken,
+          'Content-Type': 'application/json'
+        },
+        timeout: 5000
+      }
+    );
+
+    if (inventoryResponse.data.success) {
+      // Inventory record istnieje - aktualizujmy go
+      const inventoryId = inventoryResponse.data.inventory._id;
+      await axios.put(
+        `${INVENTORY_SERVICE_URL}/inventory/${inventoryId}`,
+        {
+          quantity: product.stock,
+          name: product.name
+        },
+        {
+          headers: {
+            'Authorization': userToken,
+            'Content-Type': 'application/json'
+          },
+          timeout: 5000
+        }
+      );
+      
+      console.log(`✅ Inventory record updated for product ${product.sku} - quantity: ${product.stock}`);
+    }
+
+    return true;
+  } catch (error) {
+    console.error(`❌ Failed to update inventory record for product ${product.sku}:`, error.message);
+    // Nie rzucamy błędu - aktualizacja produktu może się udać nawet bez synchronizacji inventory
+    return false;
+  }
+}
+
+// Helper function to create inventory record
+async function createInventoryRecord(product, userToken) {
+  try {
+    const inventoryData = {
+      inventoryId: `INV-${Date.now()}-${product.sku}`,
+      productId: product._id,
+      sku: product.sku,
+      name: product.name,
+      quantity: product.stock || 0,
+      reorderPoint: 5, // domyślnie 5 sztuk
+      maxStock: 100    // domyślnie max 100 sztuk
+    };
+
+    const response = await axios.post(
+      `${INVENTORY_SERVICE_URL}/inventory`,
+      inventoryData,
+      {
+        headers: {
+          'Authorization': userToken,
+          'Content-Type': 'application/json'
+        },
+        timeout: 5000
+      }
+    );
+
+    console.log(`✅ Inventory record created for product ${product.sku}`);
+    return response.data;
+  } catch (error) {
+    console.error(`❌ Failed to create inventory record for product ${product.sku}:`, error.message);
+    // Nie rzucamy błędu - produkt może istnieć bez inventory record
+    return null;
+  }
+}
 
 /**
  * @swagger
@@ -420,6 +501,12 @@ router.post('/', authMiddleware, [
     const product = new Product(productData);
     await product.save();
 
+    // Automatically create inventory record
+    const userToken = req.headers.authorization;
+    if (userToken) {
+      await createInventoryRecord(product, userToken);
+    }
+
     res.status(201).json({
       success: true,
       message: 'Product created successfully',
@@ -529,6 +616,14 @@ router.put('/:id', authMiddleware, [
       });
     }
 
+    // Synchronize with inventory if stock was updated
+    if (req.body.stock !== undefined) {
+      const userToken = req.headers.authorization;
+      if (userToken) {
+        await updateInventoryRecord(product, userToken);
+      }
+    }
+
     res.json({
       success: true,
       message: 'Product updated successfully',
@@ -614,6 +709,53 @@ router.delete('/:id', authMiddleware, [
     res.status(500).json({
       success: false,
       message: 'Server error deleting product'
+    });
+  }
+});
+
+// System endpoint: Update product stock (used by Order Service after delivery)
+router.put('/:id/system-stock', [
+  param('id').isMongoId().withMessage('Invalid product ID'),
+  body('stock').isInt({ min: 0 }).withMessage('Stock must be a non-negative integer')
+], async (req, res) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        success: false,
+        message: 'Validation failed',
+        errors: errors.array()
+      });
+    }
+
+    const { stock } = req.body;
+
+    const product = await Product.findById(req.params.id);
+    
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        message: 'Product not found'
+      });
+    }
+
+    const oldStock = product.stock;
+    product.stock = stock;
+    await product.save();
+
+    console.log(`System: Updated product ${product.name} stock: ${oldStock} → ${stock}`);
+
+    res.json({
+      success: true,
+      message: 'Product stock updated (system)',
+      product
+    });
+
+  } catch (error) {
+    console.error('System stock update error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error updating stock'
     });
   }
 });

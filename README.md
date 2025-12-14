@@ -1,314 +1,293 @@
-# Mikrousługi - Node.js Microservices Architecture
+# 🚀 Mikrousługi E-commerce z Automatyzacją
 
-Kompleksowy projekt mikrousług zbudowany przy użyciu Node.js, Express.js, MongoDB i Docker.
+Zaawansowany system e-commerce oparty na mikrousługach z pełną automatyzacją procesów biznesowych.
+
+## ✨ Główne funkcje
+
+### 🤖 **Kompletna Automatyzacja Workflow**
+- **Płatność → Status zamówienia**: Automatyczna zmiana na "processing" po successful payment
+- **Dostarczenie → Aktualizacja magazynu**: Automatyczne zmniejszenie stock i usunięcie rezerwacji
+- **Zarządzanie inventory**: Automatyczne tworzenie pozycji magazynowych dla nowych produktów
+
+### 🎯 **Workflow E-commerce**
+1. **Dodanie produktu** → Automatyczne tworzenie rekordu w magazynie
+2. **Składanie zamówienia** → Automatyczna rezerwacja produktów
+3. **Płatność** → Automatyczna zmiana statusu zamówienia na "processing"
+4. **Dostarczenie** → Automatyczna aktualizacja stock i usunięcie rezerwacji
 
 ## 🏗️ Architektura
 
-- **Frontend**: React.js z Material-UI  
-- **Backend**: Node.js + Express.js
-- **Baza danych**: MongoDB z Mongoose ORM
-- **Autoryzacja**: JWT tokens z bcrypt
-- **Komunikacja**: REST API (HTTP + JSON)
-- **API Gateway**: Prosty Express proxy (axios-based)
-- **Konteneryzacja**: Docker + Docker Compose
-- **Dokumentacja**: Swagger/OpenAPI
-- **Uruchamianie**: Skrypty bash dla rozwoju lokalnego
+### **Backend Stack**
+- **Node.js + Express.js** - REST API dla każdego serwisu
+- **MongoDB** - Dedykowana baza danych per serwis
+- **JWT Authentication** - Bezpieczna autoryzacja z bcrypt
+- **Axios** - Komunikacja między serwisami
+- **Express Gateway** - Centralne API Gateway
 
-## 🚀 Usługi
+### **Frontend Stack**
+- **React 18** - Nowoczesny UI
+- **Material-UI** - Komponentowa biblioteka UI
+- **Responsive Design** - Działanie na wszystkich urządzeniach
 
-### 1. Frontend (Port 3003)
-- React.js z Material-UI
-- Dashboard zarządzania produktami
-- Autentykacja użytkowników
-- Responsywny design
-- URL: http://localhost:3003
+## 🗂️ Serwisy
 
-### 2. Auth Service (Port 3001)
-- Rejestracja i logowanie użytkowników
-- JWT token generation/validation
-- Szyfrowanie haseł (bcrypt)
-- Endpoints: `/auth/register`, `/auth/login`, `/auth/verify`
+| Serwis | Port | Baza Danych | Funkcjonalność |
+|--------|------|-------------|----------------|
+| **Auth Service** | 3001 | `mikrouslugi` | Zarządzanie użytkownikami, JWT tokens |
+| **Product Service** | 3002 | `mikrouslugi` | Katalog produktów, system kategorii |
+| **Order Service** | 3004 | `mikrouslugi_orders` | Zamówienia, automatyzacja statusów |
+| **Payment Service** | 3005 | `mikrouslugi_payments` | Płatności, auto-processing |
+| **Notification Service** | 3006 | `mikrouslugi_notifications` | Email/SMS notifications |
+| **Inventory Service** | 3007 | `mikrouslugi_inventory` | Magazyn, rezerwacje, delivery |
+| **Analytics Service** | 3008 | `mikrouslugi_analytics` | Raporty, statystyki |
+| **API Gateway** | 3000 | - | Routing, dokumentacja |
+| **Frontend** | 3003 | - | React SPA |
 
-### 3. Product Service (Port 3002)
-- Zarządzanie produktami
-- CRUD operations dla produktów
-- Autoryzacja z Auth Service
-- Endpoints: `/products`, `/products/:id`
+## 🚀 Quick Start
 
-### 4. API Gateway (Port 3000)
-- Prosty proxy oparty na Express + Axios
-- Routing żądań do odpowiednich serwisów
-- CORS handling
-- Centralized logging
-- URL: http://localhost:3000
-
-## 📦 Wymagania
-
-- Node.js 18+
-- Docker & Docker Compose
-- MongoDB (w kontenerze)
-
-## 🛠️ Instalacja i Uruchomienie
-
-### Szybki Start (Rozwój lokalny)
-
-1. **Klonuj repozytorium**:
+### **1. Klonowanie i instalacja**
 ```bash
-git clone https://github.com/Danielomix/mikrouslugi.git
+git clone <repository-url>
 cd mikrouslugi
-```
-
-2. **Zainstaluj zależności**:
-```bash
 npm run install-all
 ```
 
-3. **Uruchom wszystkie serwisy**:
+### **2. Uruchomienie systemu**
 ```bash
+# Uruchomienie wszystkich 9 serwisów
 ./start-local.sh
-```
 
-4. **Zatrzymaj wszystkie serwisy**:
-```bash
+# Zatrzymanie systemu
 ./stop-local.sh
 ```
 
-### Uruchomienie z Docker
+### **3. Dostęp do aplikacji**
+- 🌐 **Frontend**: http://localhost:3003
+- 🚪 **API Gateway**: http://localhost:3000  
+- 📖 **Dokumentacja**: http://localhost:3000/api-docs
 
-1. **Uruchomienie całego środowiska**:
-   ```bash
-   git clone <repository-url>
-   cd mikrouslugi
-   ```
+## 👤 Logowanie
 
-2. **Zainstaluj zależności**:
-   ```bash
-   npm run install-all
-   ```
+**Domyślne konto administratora:**
+- **Email**: `test@example.com`
+- **Hasło**: `password123`
+- **Rola**: `admin`
 
-3. **Uruchom wszystkie serwisy**:
-   ```bash
-   npm run dev
-   ```
+## 🧪 Testowanie Automatyzacji
 
-## � Skrypty Lokalne
-
-### start-local.sh
-Uruchamia wszystkie mikrousługi lokalnie bez Docker:
-- Sprawdza i uruchamia MongoDB
-- Czyści porty
-- Uruchamia wszystkie serwisy w tle
-- Wyświetla status i adresy
-
-### stop-local.sh  
-Zatrzymuje wszystkie lokalne serwisy:
-- Zabija procesy Node.js
-- Czyści porty
-- Usuwa logi
-
-## �🐳 Docker Commands
-
+### **Test 1: Dodanie produktu**
 ```bash
-# Uruchom wszystkie serwisy
-docker-compose up --build
-
-# Uruchom w tle
-docker-compose up -d
-
-# Zatrzymaj wszystkie serwisy
-docker-compose down
-
-# Zobacz logi
-docker-compose logs -f
-
-# Wyczyść wszystko (containers, volumes, networks)
-npm run clean
+# Produkt automatycznie tworzy rekord w magazynie
+curl -X POST "http://localhost:3000/api/products" \
+  -H "Authorization: Bearer <TOKEN>" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Test Product", "price": 1000, "stock": 10}'
 ```
 
-## 📋 Dostępne Endpointy
-
-### Frontend Web App (http://localhost:3003)
-- **Dashboard**: Główny panel administracyjny
-- **Logowanie**: http://localhost:3003/login
-- **Rejestracja**: http://localhost:3003/register
-- **Produkty**: http://localhost:3003/products
-- **Dodaj Produkt**: http://localhost:3003/products/new
-
-### API Gateway (http://localhost:3000)
-- `POST /api/auth/*` - Proxy do Auth Service
-- `GET/POST/PUT/DELETE /api/products/*` - Proxy do Product Service
-
-## 🧪 Testowanie
-
-### Postman
-1. Importuj kolekcję z `/docs/postman/`
-2. Ustaw environment variables
-3. Testuj endpoints
-
-### Manual Testing
+### **Test 2: Pełny workflow zamówienia**
 ```bash
-# Rejestracja użytkownika
-curl -X POST "http://localhost:3000/api/auth/register" \
-  -H "Content-Type: application/json" \
-  -d '{"name":"Test User","email":"test@test.com","password":"test123"}'
+# 1. Utwórz zamówienie (status: pending)
+ORDER_ID="<order-id>"
 
-# Logowanie 
-curl -X POST "http://localhost:3000/api/auth/login" \
-  -H "Content-Type: application/json" \
-  -d '{"email":"test@test.com","password":"test123"}'
+# 2. Utwórz płatność (status: pending) 
+PAYMENT_ID="<payment-id>"
 
-# Pobranie produktów (wymagany token)
-curl -X GET "http://localhost:3000/api/products" \
-  -H "Authorization: Bearer YOUR_JWT_TOKEN"
+# 3. Procesuj płatność → Automatycznie zmienia zamówienie na "processing"
+curl -X POST "http://localhost:3000/api/payments/$PAYMENT_ID/process"
 
-# Wyszukiwanie produktów
-curl -X GET "http://localhost:3000/api/products?search=Opel" \
-  -H "Authorization: Bearer YOUR_JWT_TOKEN"
-
-# Filtrowanie po kategorii
-curl -X GET "http://localhost:3000/api/products?category=Other" \
-  -H "Authorization: Bearer YOUR_JWT_TOKEN"
-```
-curl -X POST http://localhost:3000/api/auth/register \
-  -H "Content-Type: application/json" \
-  -d '{"email":"test@example.com","password":"password123","name":"Test User"}'
-
-# Logowanie
-curl -X POST http://localhost:3000/api/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{"email":"test@example.com","password":"password123"}'
-
-# Lista produktów
-curl http://localhost:3000/api/products
+# 4. Dostarcz zamówienie → Automatycznie aktualizuje magazyn i stock
+curl -X PUT "http://localhost:3000/api/orders/$ORDER_ID/system-status" \
+  -d '{"status": "delivered"}'
 ```
 
-## 📊 Monitoring i Logi
+### **Test 3: Sprawdzenie automatyzacji**
+```bash
+# Przed testem: Product Stock: 5, Inventory: 5
+# Po zamówieniu 2 sztuk i dostarczeniu:
+# Product Stock: 3, Inventory: 3 (automatycznie zaktualizowane)
+```
 
-### Logi lokalne (po uruchomieniu ./start-local.sh)
+## 📊 Monitoring
+
+### **Logi serwisów:**
 ```bash
 # Auth Service
 tail -f /tmp/auth-service.log
 
-# Product Service  
-tail -f /tmp/product-service.log
+# Order Service  
+tail -f /tmp/order-service.log
 
-# API Gateway
-tail -f /tmp/gateway.log
+# Payment Service
+tail -f /tmp/payment-service.log
 
-# Frontend
-tail -f /tmp/frontend.log
+# Wszystkie inne serwisy
+tail -f /tmp/<service-name>.log
 ```
 
-### Logi Docker
+### **Health Check:**
 ```bash
-# Wszystkie serwisy
-docker-compose logs -f
-
-# Konkretny serwis
-docker-compose logs -f auth-service
+# Sprawdź status wszystkich serwisów
+curl http://localhost:3001/health  # Auth
+curl http://localhost:3002/health  # Product
+curl http://localhost:3004/health  # Order
+curl http://localhost:3005/health  # Payment
+curl http://localhost:3006/health  # Notification
+curl http://localhost:3007/health  # Inventory
+curl http://localhost:3008/health  # Analytics
 ```
 
-### Health Checks
-- Auth Service: http://localhost:3001/health
-- Product Service: http://localhost:3002/health  
-- API Gateway: http://localhost:3000/health
+## 🛠️ Narzędzia Development
 
-## ✨ Funkcjonalności
+### **Database Management**
+```bash
+# Wyczyszczenie wszystkich baz (zachowuje admin user)
+mongosh < scripts/clean-all-databases.mongodb
 
-### Frontend (React)
-- ✅ **Dashboard** - Statystyki i przegląd
-- ✅ **Autoryzacja** - Logowanie/Rejestracja z JWT
-- ✅ **Zarządzanie produktami** - CRUD operations
-- ✅ **Wyszukiwanie** - Po nazwie, opisie, SKU
-- ✅ **Filtrowanie** - Po kategorii, cenie
-- ✅ **Responsive design** - Material-UI
-- ✅ **Error handling** - Toast notifications
-
-### Backend API
-- ✅ **JWT Authentication** - Bezpieczna autoryzacja
-- ✅ **Password hashing** - bcrypt
-- ✅ **Input validation** - express-validator
-- ✅ **MongoDB integration** - Mongoose ODM
-- ✅ **API documentation** - Swagger/OpenAPI
-- ✅ **CORS handling** - Cross-origin requests
-- ✅ **Error handling** - Centralized error responses
-
-### API Gateway
-- ✅ **Request routing** - Proxy do mikrousług
-- ✅ **Simple architecture** - Express + Axios (stabilne)
-- ✅ **CORS configuration** - Frontend integration
-- ✅ **Logging** - Request/response tracking
-
-## 🔧 Development
-
-### Struktura projektu
-```
-mikrouslugi/
-├── frontend/             # React.js frontend (port 3003)
-├── services/
-│   ├── auth-service/     # Serwis autoryzacji (port 3001)
-│   └── product-service/  # Serwis produktów (port 3002)
-├── gateway/              # API Gateway (port 3000)
-│   └── simple-gateway.js # Prosty, stabilny proxy
-├── shared/               # Wspólne utilities
-├── docs/                 # Dokumentacja i Postman collections
-├── start-local.sh        # 🚀 Uruchomienie lokalnie 
-├── stop-local.sh         # 🛑 Zatrzymanie serwisów
-├── docker-compose.yml    # Docker orchestration
-└── README.md
+# Sprawdzenie stanu baz danych
+mongosh mikrouslugi
+mongosh mikrouslugi_orders
+mongosh mikrouslugi_payments
+mongosh mikrouslugi_inventory
+mongosh mikrouslugi_notifications
+mongosh mikrouslugi_analytics
 ```
 
-## 📚 Dokumentacja
+### **API Testing**
+```bash
+# Logowanie i pobranie tokenu
+TOKEN=$(curl -s -X POST http://localhost:3000/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"test@example.com","password":"password123"}' | \
+  jq -r '.token')
 
-- **[Setup Guide](docs/SETUP.md)** - Szczegółowa instrukcja instalacji
-- **[Frontend Guide](docs/FRONTEND-GUIDE.md)** - Kompletny przewodnik po interfejsie
-- **[Architecture](docs/ARCHITECTURE.md)** - Opis architektury mikrousług
-- **[Troubleshooting](docs/TROUBLESHOOTING.md)** - Rozwiązywanie problemów
+# Test endpointów
+curl -H "Authorization: Bearer $TOKEN" http://localhost:3000/api/products
+curl -H "Authorization: Bearer $TOKEN" http://localhost:3000/api/orders
+curl -H "Authorization: Bearer $TOKEN" http://localhost:3000/api/payments
+curl -H "Authorization: Bearer $TOKEN" http://localhost:3000/api/inventory
+```
 
-## 🎯 Quick Links
+## 🔧 Konfiguracja
 
-- **Frontend App**: http://localhost:3003
-- **API Docs**: http://localhost:3000/api-docs  
-- **GitHub Repo**: https://github.com/Danielomix/mikrouslugi
+### **Environment Variables**
+Każdy serwis ma plik `.env` z konfiguracją:
+- `MONGODB_URI` - URL bazy danych
+- `JWT_SECRET` - Klucz do tokenów JWT
+- `PORT` - Port serwisu
+- `*_SERVICE_URL` - URLe innych serwisów
 
-## 🤝 Wsparcie
+### **Bazy danych**
+- `mikrouslugi` - Auth, Products, główne dane
+- `mikrouslugi_orders` - Zamówienia
+- `mikrouslugi_payments` - Płatności
+- `mikrouslugi_inventory` - Magazyn
+- `mikrouslugi_notifications` - Powiadomienia
+- `mikrouslugi_analytics` - Analityka
 
-Jeśli masz problemy:
-1. Sprawdź [Troubleshooting Guide](docs/TROUBLESHOOTING.md)
-2. Uruchom `./stop-local.sh && ./start-local.sh` 
-3. Sprawdź logi w `/tmp/*.log`
+## 🎯 Funkcjonalności
 
-## 📖 Dokumentacja
+### **Frontend Features**
+- ✅ Dashboard z statystykami
+- ✅ Zarządzanie produktami (CRUD)
+- ✅ Lista zamówień z filtrami
+- ✅ System płatności z auto-processing
+- ✅ Zarządzanie magazynem
+- ✅ Responsive design
+- ✅ Real-time updates
 
-- **Swagger UI**: http://localhost:3000/api-docs
-- **Postman Collection**: `/docs/postman/`
-- **API Spec**: `/docs/swagger/`
+### **Backend Features**  
+- ✅ Mikrousługowa architektura
+- ✅ Auto-scaling ready
+- ✅ JWT Authentication
+- ✅ Input validation
+- ✅ Error handling
+- ✅ API documentation (Swagger)
+- ✅ Health checks
+- ✅ Centralized logging
+
+### **Automatyzacja**
+- ✅ Auto payment processing (2s delay simulation)
+- ✅ Auto order status updates
+- ✅ Auto inventory management
+- ✅ Auto product stock updates
+- ✅ Inter-service communication
+- ✅ System endpoints dla automatyzacji
+
+## 📚 Dokumentacja API
+
+Każdy serwis ma dokumentację Swagger dostępną pod:
+- **Auth Service**: http://localhost:3001/api-docs
+- **Product Service**: http://localhost:3002/api-docs
+- **Order Service**: http://localhost:3004/api-docs
+- **Payment Service**: http://localhost:3005/api-docs
+- **Notification Service**: http://localhost:3006/api-docs
+- **Inventory Service**: http://localhost:3007/api-docs
+- **Analytics Service**: http://localhost:3008/api-docs
+- **API Gateway**: http://localhost:3000/api-docs
 
 ## 🔒 Bezpieczeństwo
 
-- JWT tokens z expiration
-- Bcrypt password hashing
-- CORS configured
-- Rate limiting
-- Input validation
+- **JWT Tokens** - Secure authentication
+- **bcrypt** - Password hashing
+- **Input Validation** - Express-validator
+- **CORS** - Controlled cross-origin access
+- **Helmet** - Security headers
+- **Rate Limiting** - Ochrona przed atakami
+- **System Endpoints** - Dedykowane endpointy dla automatyzacji
 
-## 🚧 TODO
+## 📈 Skalowanie
 
-- [ ] Redis cache integration
-- [ ] Message queue (RabbitMQ)
-- [ ] Elasticsearch logging
-- [ ] Kubernetes deployment
-- [ ] Unit & Integration tests
-- [ ] CI/CD pipeline
+System zaprojektowany z myślą o skalowalności:
+- **Mikrousługi** - Niezależne deployment
+- **Database per Service** - Izolacja danych
+- **Stateless Services** - Horizontal scaling ready
+- **API Gateway** - Load balancing ready
+- **Docker Ready** - Konteneryzacja gotowa
+- **Cloud Native** - Gotowe na chmurę
 
-## 🤝 Contributing
+## 🚨 Troubleshooting
 
-1. Fork the project
-2. Create feature branch
-3. Commit changes
-4. Push to branch
-5. Create Pull Request
+### **Problemy z uruchomieniem**
+```bash
+# Sprawdź czy MongoDB działa
+mongosh --eval "db.runCommand('ping')"
 
-## 📄 License
+# Sprawdź dostępność portów
+lsof -i :3000-3008
 
-MIT License - see LICENSE file for details.
+# Restart systemu
+./stop-local.sh && ./start-local.sh
+```
+
+### **Problemy z autoryzacją**
+```bash
+# Sprawdź token
+echo $TOKEN | cut -c 1-50
+
+# Odnów token
+TOKEN=$(curl -s -X POST http://localhost:3000/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"test@example.com","password":"password123"}' | \
+  jq -r '.token')
+```
+
+## 🎉 Demo Workflow
+
+**Kompletny test systemu:**
+
+1. **Uruchom system**: `./start-local.sh`
+2. **Zaloguj się**: http://localhost:3003
+3. **Dodaj produkt**: Automatycznie tworzy rekord w magazynie
+4. **Utwórz zamówienie**: Produkty są rezerwowane
+5. **Procesuj płatność**: Status zamówienia zmienia się automatycznie
+6. **Dostarcz zamówienie**: Stock i magazyn aktualizują się automatycznie
+
+**System automatycznie zarządza całym cyklem życia zamówienia!**
+
+---
+
+**🎯 Gotowy do production system e-commerce z pełną automatyzacją procesów biznesowych!**
+
+**Utworzony przez**: Mikrousługi Development Team  
+**Data**: Grudzień 2025  
+**Wersja**: 2.0 (z automatyzacją)

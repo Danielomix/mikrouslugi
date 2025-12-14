@@ -78,7 +78,8 @@ router.get('/', auth, async (req, res) => {
       items,
       pagination: {
         current: page,
-        total: Math.ceil(total / limit),
+        total: total,
+        pages: Math.ceil(total / limit),
         hasNext: skip + items.length < total,
         hasPrev: page > 1
       }
@@ -194,6 +195,34 @@ router.post('/reserve', auth, async (req, res) => {
   }
 });
 
+// Release reserved stock
+router.post('/release', auth, async (req, res) => {
+  try {
+    const { productId, quantity, warehouseId = 'MAIN' } = req.body;
+
+    if (!productId || !quantity || quantity <= 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'Product ID and positive quantity are required'
+      });
+    }
+
+    const inventory = await Inventory.releaseReservedStock(productId, quantity, warehouseId);
+
+    res.json({
+      success: true,
+      message: 'Reserved stock released successfully',
+      inventory
+    });
+  } catch (error) {
+    console.error('Error releasing reserved stock:', error);
+    res.status(400).json({
+      success: false,
+      message: error.message
+    });
+  }
+});
+
 // Add stock (restock)
 router.post('/add-stock', auth, async (req, res) => {
   try {
@@ -239,7 +268,7 @@ router.post('/', auth, async (req, res) => {
       });
     }
 
-    const { productId, sku, name, quantity, reorderPoint, maxStock, warehouse, location, cost, supplier } = req.body;
+    const { inventoryId, productId, sku, name, quantity, reorderPoint, maxStock, warehouse, location, cost, supplier } = req.body;
 
     if (!productId || !sku || !name) {
       return res.status(400).json({
@@ -249,6 +278,7 @@ router.post('/', auth, async (req, res) => {
     }
 
     const inventory = new Inventory({
+      inventoryId: inventoryId || `INV-${Date.now()}-${sku}`,
       productId,
       sku,
       name,
@@ -298,6 +328,104 @@ router.get('/low-stock', auth, async (req, res) => {
     });
   } catch (error) {
     console.error('Error fetching low stock items:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error',
+      error: error.message
+    });
+  }
+});
+
+// Update inventory item
+router.put('/:id', auth, async (req, res) => {
+  try {
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({
+        success: false,
+        message: 'Access denied. Admin role required.'
+      });
+    }
+
+    const { quantity, name, reorderPoint, maxStock } = req.body;
+    const updateData = {};
+
+    if (quantity !== undefined) updateData.quantity = quantity;
+    if (name !== undefined) updateData.name = name;
+    if (reorderPoint !== undefined) updateData.reorderPoint = reorderPoint;
+    if (maxStock !== undefined) updateData.maxStock = maxStock;
+
+    // Update availableQuantity when quantity changes
+    if (quantity !== undefined) {
+      const currentInventory = await Inventory.findById(req.params.id);
+      if (currentInventory) {
+        updateData.availableQuantity = quantity - (currentInventory.reservedQuantity || 0);
+      }
+    }
+
+    const inventory = await Inventory.findByIdAndUpdate(
+      req.params.id,
+      updateData,
+      { new: true, runValidators: true }
+    );
+
+    if (!inventory) {
+      return res.status(404).json({
+        success: false,
+        message: 'Inventory item not found'
+      });
+    }
+
+    res.json({
+      success: true,
+      message: 'Inventory item updated successfully',
+      inventory
+    });
+  } catch (error) {
+    console.error('Error updating inventory:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error',
+      error: error.message
+    });
+  }
+});
+
+// System endpoint: Update inventory when order is delivered (remove reservation)
+router.put('/product/:productId/deliver', async (req, res) => {
+  try {
+    const { productId } = req.params;
+    const { quantity } = req.body;
+
+    if (!quantity || quantity <= 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'Valid quantity is required'
+      });
+    }
+
+    const inventoryItem = await Inventory.findOne({ productId });
+    
+    if (!inventoryItem) {
+      return res.status(404).json({
+        success: false,
+        message: 'Inventory item not found'
+      });
+    }
+
+    // Remove reservation and decrease total quantity
+    inventoryItem.reservedQuantity = Math.max(0, inventoryItem.reservedQuantity - quantity);
+    inventoryItem.quantity = Math.max(0, inventoryItem.quantity - quantity);
+    inventoryItem.lastMovement = new Date();
+
+    await inventoryItem.save();
+
+    res.json({
+      success: true,
+      message: 'Inventory updated for delivery',
+      inventory: inventoryItem
+    });
+  } catch (error) {
+    console.error('Error updating inventory for delivery:', error);
     res.status(500).json({
       success: false,
       message: 'Server error',

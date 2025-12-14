@@ -1,0 +1,58 @@
+// MongoDB script to clean database while preserving admin user
+use mikrouslugi;
+
+print('🔌 Connected to mikrouslugi database');
+
+print('\n📊 Current database state:');
+print('   users: ' + db.users.countDocuments());
+print('   products: ' + db.products.countDocuments());
+print('   orders: ' + db.orders.countDocuments());
+print('   payments: ' + db.payments.countDocuments());
+print('   inventories: ' + db.inventories.countDocuments());
+
+// Find admin user to preserve
+const adminUser = db.users.findOne({
+  email: 'test@example.com',
+  role: 'admin'
+});
+
+if (!adminUser) {
+  print('❌ Admin user test@example.com not found!');
+  quit();
+}
+
+print('\n🛡️  Preserving admin user: ' + adminUser.email + ' (' + adminUser.name + ')');
+
+print('\n🧹 Cleaning collections...');
+
+// Delete all products
+const productsResult = db.products.deleteMany({});
+print('   ✅ Products deleted: ' + productsResult.deletedCount);
+
+// Delete all orders
+const ordersResult = db.orders.deleteMany({});
+print('   ✅ Orders deleted: ' + ordersResult.deletedCount);
+
+// Delete all payments
+const paymentsResult = db.payments.deleteMany({});
+print('   ✅ Payments deleted: ' + paymentsResult.deletedCount);
+
+// Delete all inventory
+const inventoryResult = db.inventories.deleteMany({});
+print('   ✅ Inventory deleted: ' + inventoryResult.deletedCount);
+
+// Delete all users except admin
+const usersResult = db.users.deleteMany({
+  _id: { $ne: adminUser._id }
+});
+print('   ✅ Users deleted: ' + usersResult.deletedCount + ' (kept admin)');
+
+print('\n📊 Final database state:');
+print('   users: ' + db.users.countDocuments());
+print('   products: ' + db.products.countDocuments());
+print('   orders: ' + db.orders.countDocuments());
+print('   payments: ' + db.payments.countDocuments());
+print('   inventories: ' + db.inventories.countDocuments());
+
+print('\n🎉 Database cleanup completed successfully!');
+print('👤 Remaining admin user: ' + adminUser.email);

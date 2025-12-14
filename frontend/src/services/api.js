@@ -103,6 +103,21 @@ class ApiService {
     return this.client.post(`/api/payments/${id}/process`);
   }
 
+  // Get all payments (admin only)
+  async getPayments(params = {}) {
+    return this.client.get('/api/payments', { params });
+  }
+
+  // Get user's payments
+  async getUserPayments(userId) {
+    return this.client.get(`/api/payments/user/${userId}`);
+  }
+
+  // Get payment by ID
+  async getPaymentById(id) {
+    return this.client.get(`/api/payments/${id}`);
+  }
+
   // Inventory endpoints
   async getInventory(params = {}) {
     return this.client.get('/api/inventory', { params });

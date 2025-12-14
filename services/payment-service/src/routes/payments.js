@@ -167,7 +167,7 @@ router.get('/user/:userId', auth, async (req, res) => {
     const { userId } = req.params;
 
     // Users can only view their own payments, admins can view any user's payments
-    if (req.user._id.toString() !== userId && req.user.role !== 'admin') {
+    if (req.user.userId !== userId && req.user.role !== 'admin') {
       return res.status(403).json({
         success: false,
         message: 'Access denied'
@@ -225,7 +225,7 @@ router.get('/:id', auth, async (req, res) => {
     }
 
     // Users can only view their own payments, admins can view any payment
-    if (payment.userId.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
+    if (payment.userId.toString() !== req.user.userId && req.user.role !== 'admin') {
       return res.status(403).json({
         success: false,
         message: 'Access denied'
@@ -307,7 +307,7 @@ router.post('/', auth, async (req, res) => {
       }
 
       const order = orderResponse.data.order;
-      if (order.userId !== req.user._id.toString()) {
+      if (order.userId !== req.user.userId) {
         return res.status(403).json({
           success: false,
           message: 'Access denied. Order belongs to different user.'
@@ -324,7 +324,7 @@ router.post('/', auth, async (req, res) => {
     // Create payment
     const payment = new Payment({
       orderId,
-      userId: req.user._id,
+      userId: req.user.userId,
       amount,
       currency: currency || 'USD',
       method,
@@ -424,6 +424,17 @@ router.post('/:id/process', auth, async (req, res) => {
         if (updatedPayment && updatedPayment.status === 'processing') {
           updatedPayment.status = 'completed';
           await updatedPayment.save();
+          
+          // AUTO: Update order status to 'processing' after successful payment
+          try {
+            const orderResponse = await axios.put(`${ORDER_SERVICE_URL}/orders/${updatedPayment.orderId}/system-status`, 
+              { status: 'processing' },
+              { timeout: 5000 }
+            );
+            console.log('Order status updated to processing after payment completion');
+          } catch (orderError) {
+            console.error('Error updating order status after payment:', orderError.message);
+          }
         }
       } catch (error) {
         console.error('Error completing payment:', error);

@@ -1,0 +1,62 @@
+// MongoDB script to clean ALL microservices databases while preserving admin user
+print('🧹 CLEANING ALL MICROSERVICES DATABASES 🧹\n');
+
+// Main database (auth, products)
+use mikrouslugi;
+print('📁 Database: mikrouslugi');
+
+const adminUser = db.users.findOne({
+  email: 'test@example.com',
+  role: 'admin'
+});
+
+if (!adminUser) {
+  print('❌ Admin user test@example.com not found in main database!');
+} else {
+  print('🛡️  Preserving admin user: ' + adminUser.email);
+  
+  // Clean main database but keep admin user
+  const productsResult = db.products.deleteMany({});
+  print('   ✅ Products deleted: ' + productsResult.deletedCount);
+  
+  const usersResult = db.users.deleteMany({
+    _id: { $ne: adminUser._id }
+  });
+  print('   ✅ Users deleted: ' + usersResult.deletedCount + ' (kept admin)');
+}
+
+const inventoriesResult = db.inventories.deleteMany({});
+print('   ✅ Inventories deleted: ' + inventoriesResult.deletedCount);
+
+print('\n📁 Database: mikrouslugi_orders');
+use mikrouslugi_orders;
+const ordersResult = db.orders.deleteMany({});
+print('   ✅ Orders deleted: ' + ordersResult.deletedCount);
+
+print('\n📁 Database: mikrouslugi_payments');
+use mikrouslugi_payments;
+const paymentsResult = db.payments.deleteMany({});
+print('   ✅ Payments deleted: ' + paymentsResult.deletedCount);
+
+print('\n📁 Database: mikrouslugi_inventory');
+use mikrouslugi_inventory;
+const inventoryItemsResult = db.inventories.deleteMany({});
+print('   ✅ Inventory items deleted: ' + inventoryItemsResult.deletedCount);
+
+print('\n📊 FINAL VERIFICATION:');
+use mikrouslugi;
+print('mikrouslugi - users: ' + db.users.countDocuments());
+print('mikrouslugi - products: ' + db.products.countDocuments());
+print('mikrouslugi - inventories: ' + db.inventories.countDocuments());
+
+use mikrouslugi_orders;
+print('mikrouslugi_orders - orders: ' + db.orders.countDocuments());
+
+use mikrouslugi_payments;
+print('mikrouslugi_payments - payments: ' + db.payments.countDocuments());
+
+use mikrouslugi_inventory;
+print('mikrouslugi_inventory - inventories: ' + db.inventories.countDocuments());
+
+print('\n🎉 ALL DATABASES CLEANED SUCCESSFULLY!');
+print('👤 Admin user preserved: test@example.com');

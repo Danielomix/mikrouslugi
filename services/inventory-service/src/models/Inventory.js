@@ -157,6 +157,12 @@ inventorySchema.virtual('isOutOfStock').get(function() {
   return this.availableQuantity <= 0;
 });
 
+// Pre-save middleware to calculate availableQuantity
+inventorySchema.pre('save', function(next) {
+  this.availableQuantity = Math.max(0, this.quantity - (this.reservedQuantity || 0));
+  next();
+});
+
 // Static method to reserve stock
 inventorySchema.statics.reserveStock = async function(productId, quantity, warehouseId = 'MAIN') {
   const inventory = await this.findOne({ 

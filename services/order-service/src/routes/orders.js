@@ -6,7 +6,8 @@ const axios = require('axios');
 
 const router = express.Router();
 
-const PRODUCT_SERVICE_URL = process.env.PRODUCT_SERVICE_URL || 'http://localhost:3002';
+const PRODUCT_SERVICE_URL = process.env.PRODUCT_SERVICE_URL || 'http://localhost:3000/api';
+const INVENTORY_SERVICE_URL = process.env.INVENTORY_SERVICE_URL || 'http://localhost:3000/api';
 
 /**
  * @swagger
@@ -351,7 +352,7 @@ router.post('/', authMiddleware, [
     const finalAmount = totalAmount + shippingCost;
 
     // Generate unique order number
-    const orderNumber = `ORD-${Date.now()}-${Math.random().toString(36).substr(2, 5).toUpperCase()}`;
+    const orderNumber = `ORD-${Date.now()}-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
 
     const order = new Order({
       orderNumber,
@@ -577,6 +578,90 @@ router.delete('/:id', authMiddleware, [
     res.status(500).json({
       success: false,
       message: 'Server error cancelling order'
+    });
+  }
+});
+
+// System endpoint for automatic status updates (e.g., after payment completion)
+router.put('/:id/system-status', [
+  param('id').isMongoId().withMessage('Invalid order ID'),
+  body('status').isIn(['pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled', 'refunded']).withMessage('Invalid status'),
+], async (req, res) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        success: false,
+        message: 'Validation failed',
+        errors: errors.array()
+      });
+    }
+
+    const { status } = req.body;
+
+    const order = await Order.findById(req.params.id);
+
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: 'Order not found'
+      });
+    }
+
+    // Update status
+    order.status = status;
+    
+    if (status === 'delivered') {
+      order.deliveredAt = new Date();
+      
+      // AUTO: Update inventory when order is delivered
+      try {
+        for (const item of order.items) {
+          // Remove reservation and decrease stock
+          const inventoryResponse = await axios.put(`${INVENTORY_SERVICE_URL}/inventory/product/${item.productId}/deliver`, 
+            { quantity: item.quantity },
+            { timeout: 5000 }
+          );
+          
+          // Update product stock using new system endpoint
+          const productGetResponse = await axios.get(`${PRODUCT_SERVICE_URL}/products/${item.productId}`, 
+            { timeout: 5000 });
+          if (productGetResponse.data.success) {
+            const currentStock = productGetResponse.data.product.stock;
+            const newStock = Math.max(0, currentStock - item.quantity);
+            
+            const productResponse = await axios.put(`${PRODUCT_SERVICE_URL}/products/${item.productId}/system-stock`, 
+              { stock: newStock },
+              { timeout: 5000 }
+            );
+            
+            console.log(`Updated product ${item.productId} stock from ${currentStock} to ${newStock}`);
+          }
+          
+          console.log(`Delivered: Updated inventory and product stock for ${item.productId}`);
+        }
+      } catch (inventoryError) {
+        console.error('Error updating inventory after delivery:', inventoryError.message);
+      }
+    }
+    
+    if (status === 'cancelled') {
+      order.cancelledAt = new Date();
+    }
+
+    await order.save();
+
+    res.json({
+      success: true,
+      message: 'Order status updated successfully (system)',
+      order
+    });
+
+  } catch (error) {
+    console.error('System order status update error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error updating order status'
     });
   }
 });

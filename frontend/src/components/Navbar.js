@@ -18,6 +18,7 @@ import {
   ShoppingBag,
   Inventory,
   Analytics,
+  Payment,
 } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
@@ -103,6 +104,17 @@ function Navbar() {
               }}
             >
               Magazyn
+            </Button>
+            <Button
+              color="inherit"
+              startIcon={<Payment />}
+              onClick={() => navigate('/payments')}
+              sx={{
+                backgroundColor: isActive('/payments') ? 'rgba(255,255,255,0.2)' : 'transparent',
+                '&:hover': { backgroundColor: 'rgba(255,255,255,0.1)' }
+              }}
+            >
+              Płatności
             </Button>
             <Button
               color="inherit"
