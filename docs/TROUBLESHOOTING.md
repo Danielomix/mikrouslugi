@@ -44,10 +44,45 @@ brew services start mongodb/brew/mongodb-community
 sudo systemctl start mongod
 sudo systemctl enable mongod
 
-# Windows
+# Windows (jako Service)
 net start MongoDB
 
+# Windows (manual start - jeśli nie zainstalowane jako service)
+# Otwórz PowerShell jako Administrator
+mongod --dbpath C:\data\db
+
 # Sprawdź logi MongoDB
+tail -f /var/log/mongodb/mongod.log  # Linux
+tail -f /opt/homebrew/var/log/mongodb/mongo.log  # macOS
+# Windows: sprawdź Event Viewer lub C:\Program Files\MongoDB\Server\6.0\log\
+```
+
+### **Problem: Port already in use (Windows-specific)**
+```powershell
+# PowerShell - sprawdź co używa portów
+netstat -ano | findstr :3000  # API Gateway
+netstat -ano | findstr :3001  # Auth Service
+netstat -ano | findstr :3002  # Product Service
+netstat -ano | findstr :3003  # Frontend
+netstat -ano | findstr :27017 # MongoDB
+
+# Zabij proces po PID (ostatnia kolumna)
+taskkill /PID <PID_NUMBER> /F
+
+# Zabij wszystkie procesy Node.js
+taskkill /IM node.exe /F
+```
+
+### **Problem: Path separators (Windows)**
+```powershell
+# Windows używa backslash (\) zamiast forward slash (/)
+# W PowerShell/CMD używaj:
+cd services\auth-service
+cd ..\product-service
+
+# W Git Bash możesz używać Unix-style paths:
+cd services/auth-service
+cd ../product-service
 tail -f /var/log/mongodb/mongod.log  # Linux
 tail -f /opt/homebrew/var/log/mongodb/mongo.log  # macOS
 ```
@@ -73,7 +108,53 @@ kill -9 $(lsof -ti :3000)
 killall node
 ```
 
-### **Problem: Dependency Issues**
+### **Problem: Node.js/npm issues (Windows)**
+```powershell
+# Sprawdź wersje Node.js i npm
+node --version  # Powinno być 18+
+npm --version
+
+# Jeśli problemy z permissions:
+# Ustaw npm prefix (unikaj sudo na Windows)
+npm config set prefix %APPDATA%\npm
+
+# Jeśli problemy z maksymalną długością ścieżki:
+# Włącz długie ścieżki w Windows 10/11
+# Settings → Update & Security → For developers → Developer Mode
+
+# Lub użyj Git Bash zamiast PowerShell/CMD
+```
+
+### **Problem: Docker Desktop (Windows)**
+```bash
+# Upewnij się że Docker Desktop jest uruchomiony
+# Windows: kliknij ikonę Docker w system tray
+
+# Sprawdź status
+docker --version
+docker-compose --version
+
+# Uruchom projekt z Docker
+docker-compose up --build
+
+# Windows-specific Docker issues:
+# 1. Włącz WSL 2 integration w Docker Desktop settings
+# 2. Sprawdź czy masz włączone Hyper-V lub WSL 2
+# 3. Restart Docker Desktop jeśli problemy z volume mounting
+```
+
+### **Problem: PowerShell Execution Policy**
+```powershell
+# Jeśli nie możesz uruchomić npm scripts:
+# Sprawdź execution policy
+Get-ExecutionPolicy
+
+# Ustaw execution policy (jako Administrator)
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+
+# Lub uruchom konkretny skrypt z bypass
+PowerShell -ExecutionPolicy Bypass -File .\start-script.ps1
+```
 ```bash
 # Wyczyść wszystkie node_modules
 find . -name "node_modules" -type d -exec rm -rf {} +

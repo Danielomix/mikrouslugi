@@ -40,7 +40,37 @@ sudo systemctl enable mongod
 ```
 
 ### Windows
-Pobierz MongoDB Community Server z [oficjalnej strony](https://www.mongodb.com/try/download/community) i zainstaluj.
+```powershell
+# Opcja 1: MongoDB Community Server (ZALECANE)
+# Pobierz z: https://www.mongodb.com/try/download/community
+# Wybierz: Windows x64, MSI installer
+# Zainstaluj z opcją "Install MongoDB as a Service"
+
+# Opcja 2: Chocolatey (jeśli masz zainstalowane)
+choco install mongodb
+
+# Opcja 3: Scoop (jeśli masz zainstalowane) 
+scoop bucket add main
+scoop install mongodb
+
+# Sprawdź instalację
+mongo --version
+
+# Uruchom MongoDB (jeśli nie jako service)
+# Utwórz katalog danych
+md C:\data\db
+
+# Uruchom mongod
+mongod --dbpath C:\data\db
+```
+
+### Weryfikacja (wszystkie systemy)
+```bash
+# Sprawdź połączenie z MongoDB
+mongo --eval "db.stats()"
+
+# Powinno wyświetlić statystyki bazy danych
+```
 
 ## 🛠️ Szybkie Uruchomienie (REKOMENDOWANE)
 
@@ -145,6 +175,8 @@ REACT_APP_NODE_ENV=development
 ### 4. Uruchomienie systemu
 
 #### Opcja A: Uruchomienie lokalne (ZALECANE dla developmentu)
+
+**Linux/macOS:**
 ```bash
 # MongoDB musi być uruchomiony!
 # Sprawdź: mongo --eval "db.stats()"
@@ -177,6 +209,50 @@ cd api-gateway && npm run dev
 
 # Terminal 9 - Frontend
 cd frontend && npm start
+```
+
+**Windows (PowerShell/Command Prompt):**
+```powershell
+# MongoDB musi być uruchomiony!
+# Sprawdź: mongo --eval "db.stats()"
+
+# Uruchom każdy serwis w osobnym oknie PowerShell/CMD:
+
+# PowerShell/CMD 1 - Auth Service
+cd services\auth-service
+npm run dev
+
+# PowerShell/CMD 2 - Product Service
+cd services\product-service
+npm run dev
+
+# PowerShell/CMD 3 - Order Service  
+cd services\order-service
+npm run dev
+
+# PowerShell/CMD 4 - Payment Service
+cd services\payment-service
+npm run dev
+
+# PowerShell/CMD 5 - Notification Service
+cd services\notification-service
+npm run dev
+
+# PowerShell/CMD 6 - Inventory Service
+cd services\inventory-service
+npm run dev
+
+# PowerShell/CMD 7 - Analytics Service
+cd services\analytics-service
+npm run dev
+
+# PowerShell/CMD 8 - API Gateway
+cd api-gateway
+npm run dev
+
+# PowerShell/CMD 9 - Frontend
+cd frontend
+npm start
 ```
 
 #### Opcja B: Docker Compose

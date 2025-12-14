@@ -53,12 +53,31 @@ npm run install-all
 ```
 
 ### **2. Uruchomienie systemu**
+
+#### macOS/Linux
 ```bash
 # Uruchomienie wszystkich 9 serwisów
 ./start-local.sh
 
 # Zatrzymanie systemu
 ./stop-local.sh
+```
+
+#### Windows
+
+**Using Command Prompt:**
+```cmd
+start-windows.bat
+```
+
+**Using PowerShell:**
+```powershell
+.\start-windows.ps1
+```
+
+**Note:** If you get execution policy errors in PowerShell, run:
+```powershell
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 ```
 
 ### **3. Dostęp do aplikacji**
