@@ -102,9 +102,9 @@ echo ""
 
 # Menu wyboru testów
 echo -e "${YELLOW}🎯 Wybierz rodzaj testów:${NC}"
-echo "1. Quick Health Check"
-echo "2. Authentication Tests" 
-echo "3. Complete E-commerce Workflow"
+echo "1. Authentication Tests"
+echo "2. Products Tests"  
+echo "3. Health Checks"
 echo "4. All Tests (Full Suite)"
 echo "5. Custom Test (podaj folder/request name)"
 echo ""
@@ -113,25 +113,16 @@ read -p "Wybierz opcję (1-5): " choice
 
 case $choice in
     1)
-        echo -e "${BLUE}🏥 Quick Health Check${NC}"
-        run_newman_tests "health-check" "$COLLECTION" "$ENVIRONMENT" "--folder Authentication"
-        ;;
-    2)
         echo -e "${BLUE}🔐 Authentication Tests${NC}"
         run_newman_tests "auth-tests" "$COLLECTION" "$ENVIRONMENT" "--folder Authentication"
         ;;
+    2)
+        echo -e "${BLUE}� Products Tests${NC}"
+        run_newman_tests "products-tests" "$COLLECTION" "$ENVIRONMENT" "--folder Products"
+        ;;
     3)
-        echo -e "${BLUE}🛒 Complete E-commerce Workflow${NC}"
-        echo "Uruchamianie pełnego workflow: Auth → Products → Orders → Payments → Automation"
-        
-        # Kolejność testów dla automation workflow
-        run_newman_tests "workflow-auth" "$COLLECTION" "$ENVIRONMENT" "--folder Authentication"
-        sleep 2
-        run_newman_tests "workflow-products" "$COLLECTION" "$ENVIRONMENT" "--folder Products"
-        sleep 2  
-        run_newman_tests "workflow-orders" "$COLLECTION" "$ENVIRONMENT" "--folder Orders"
-        sleep 2
-        run_newman_tests "workflow-payments" "$COLLECTION" "$ENVIRONMENT" "--folder Payments"
+        echo -e "${BLUE}🏥 Health Checks${NC}"
+        run_newman_tests "health-tests" "$COLLECTION" "$ENVIRONMENT" "--folder \"Health Checks\""
         ;;
     4)
         echo -e "${BLUE}🔥 All Tests (Full Suite)${NC}"
