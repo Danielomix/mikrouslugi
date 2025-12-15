@@ -114,24 +114,24 @@ read -p "Wybierz opcję (1-5): " choice
 case $choice in
     1)
         echo -e "${BLUE}🏥 Quick Health Check${NC}"
-        run_newman_tests "health-check" "$COLLECTION" "$ENVIRONMENT" "--folder 'Authentication'"
+        run_newman_tests "health-check" "$COLLECTION" "$ENVIRONMENT" "--folder Authentication"
         ;;
     2)
         echo -e "${BLUE}🔐 Authentication Tests${NC}"
-        run_newman_tests "auth-tests" "$COLLECTION" "$ENVIRONMENT" "--folder 'Authentication'"
+        run_newman_tests "auth-tests" "$COLLECTION" "$ENVIRONMENT" "--folder Authentication"
         ;;
     3)
         echo -e "${BLUE}🛒 Complete E-commerce Workflow${NC}"
         echo "Uruchamianie pełnego workflow: Auth → Products → Orders → Payments → Automation"
         
         # Kolejność testów dla automation workflow
-        run_newman_tests "workflow-auth" "$COLLECTION" "$ENVIRONMENT" "--folder 'Authentication'"
+        run_newman_tests "workflow-auth" "$COLLECTION" "$ENVIRONMENT" "--folder Authentication"
         sleep 2
-        run_newman_tests "workflow-products" "$COLLECTION" "$ENVIRONMENT" "--folder 'Products'"
+        run_newman_tests "workflow-products" "$COLLECTION" "$ENVIRONMENT" "--folder Products"
         sleep 2  
-        run_newman_tests "workflow-orders" "$COLLECTION" "$ENVIRONMENT" "--folder 'Orders'"
+        run_newman_tests "workflow-orders" "$COLLECTION" "$ENVIRONMENT" "--folder Orders"
         sleep 2
-        run_newman_tests "workflow-payments" "$COLLECTION" "$ENVIRONMENT" "--folder 'Payments'"
+        run_newman_tests "workflow-payments" "$COLLECTION" "$ENVIRONMENT" "--folder Payments"
         ;;
     4)
         echo -e "${BLUE}🔥 All Tests (Full Suite)${NC}"
@@ -139,7 +139,7 @@ case $choice in
         ;;
     5)
         read -p "Podaj nazwę folderu lub request: " custom_name
-        run_newman_tests "custom-$custom_name" "$COLLECTION" "$ENVIRONMENT" "--folder '$custom_name'"
+        run_newman_tests "custom-$custom_name" "$COLLECTION" "$ENVIRONMENT" "--folder $custom_name"
         ;;
     *)
         echo -e "${RED}❌ Nieprawidłowa opcja${NC}"
@@ -153,5 +153,5 @@ echo -e "${BLUE}📊 Wyniki zapisane w: test-results/${NC}"
 echo ""
 echo -e "${YELLOW}💡 Przydatne komendy:${NC}"
 echo "  newman run docs/postman/mikrouslugi-collection.json -e docs/postman/mikrouslugi-environment.json"
-echo "  newman run docs/postman/mikrouslugi-collection.json -e docs/postman/mikrouslugi-environment.json --folder 'Authentication'"
+echo "  newman run docs/postman/mikrouslugi-collection.json -e docs/postman/mikrouslugi-environment.json --folder Authentication"
 echo "  newman run docs/postman/mikrouslugi-collection.json -e docs/postman/mikrouslugi-environment.json --reporters cli,json"
